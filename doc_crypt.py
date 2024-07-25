@@ -6,9 +6,11 @@ from key_crypt import encrypt_key, decrypt_key
 from dotenv import load_dotenv
 import os
 import sys
+import threading
 
 load_dotenv()
 KEY_PATH = os.getenv("KEY_PATH")
+key = ""
 
 # Generate key
 """salt = get_random_bytes(32)
@@ -54,16 +56,26 @@ def crypt_dir(directory, mode):
             elif entry.is_dir():
                 crypt_dir(entry.path, mode)
 
-def crypt_all_dirs(mode):
-    [crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
-
 def load_key():
     with open(KEY_PATH, "rb") as f:
         key = f.read()
     return key
 
-if __name__ == "__main__":
-    target_dir_paths = []
+
+
+def main():
+    threads = []
+
+    def crypt_all_dirs(mode):
+        print(key)
+        #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
+        for directory in target_dir_paths:
+            thread = threading.Thread(target=crypt_dir, args=(directory, mode,))
+            threads.append(thread)
+            thread.start()
+
+        for thread in threads:
+            thread.join()
 
     try:
         if sys.argv[1] == "encrypt":
@@ -78,3 +90,8 @@ if __name__ == "__main__":
         print("Could not find a key.")
     except ValueError:
         print("Files are encrypted.")
+
+if __name__ == "__main__":
+    target_dir_paths = []
+    main()
+    
