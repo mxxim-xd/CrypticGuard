@@ -92,5 +92,10 @@ def main():
 
 if __name__ == "__main__":
     target_dir_paths = []
+
+    if len(target_dir_paths) == 0:
+        print("No directories to encrypt/decrypt.")
+        sys.exit(1)
+
     main()
     
