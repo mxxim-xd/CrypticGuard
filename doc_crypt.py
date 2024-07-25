@@ -10,7 +10,6 @@ import threading
 
 load_dotenv()
 KEY_PATH = os.getenv("KEY_PATH")
-key = ""
 
 # Generate key
 """salt = get_random_bytes(32)
@@ -58,16 +57,16 @@ def crypt_dir(directory, mode):
 
 def load_key():
     with open(KEY_PATH, "rb") as f:
-        key = f.read()
-    return key
+        sym_key = f.read()
+    return sym_key
 
 
 
 def main():
     threads = []
+    global key
 
     def crypt_all_dirs(mode):
-        print(key)
         #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
         for directory in target_dir_paths:
             thread = threading.Thread(target=crypt_dir, args=(directory, mode,))
