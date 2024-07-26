@@ -62,10 +62,10 @@ def load_key():
 
 
 def main():
-    threads = []
     global key
 
     def crypt_all_dirs(mode):
+        threads = []
         #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
         #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
         for directory in target_dir_paths:
@@ -98,7 +98,7 @@ def main():
     except FileNotFoundError:
         print("Could not find a key.")
     except ValueError:
-        print("Files are encrypted.")
+        print("Files are encrypted or incorrect decryption.")
 
 if __name__ == "__main__":
     target_dir_paths = []
