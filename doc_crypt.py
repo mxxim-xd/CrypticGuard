@@ -61,20 +61,30 @@ def load_key():
     return sym_key
 
 
-
 def main():
     threads = []
     global key
 
     def crypt_all_dirs(mode):
         #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
+        #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
         for directory in target_dir_paths:
-            thread = threading.Thread(target=crypt_dir, args=(directory, mode,))
-            threads.append(thread)
-            thread.start()
+            subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
+            sub_dir_num = len(subdirs)
+            print(sub_dir_num)
 
-        for thread in threads:
-            thread.join()
+            if sub_dir_num <= 1:
+                crypt_dir(directory, mode)
+                continue
+     
+            for subdir in subdirs:
+                if len(threads) < 8:
+                    thread = threading.Thread(target=crypt_dir, args=(subdir, mode,))
+                    threads.append(thread)
+                    thread.start()
+                else:
+                    crypt_dir(subdir, mode)
+        [thread.join() for thread in threads]
 
     try:
         if sys.argv[1] == "encrypt":
@@ -96,6 +106,5 @@ if __name__ == "__main__":
     if len(target_dir_paths) == 0:
         print("No directories to encrypt/decrypt.")
         sys.exit(1)
-
     main()
     
