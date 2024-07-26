@@ -11,15 +11,6 @@ import threading
 load_dotenv()
 KEY_PATH = os.getenv("KEY_PATH")
 
-# Generate key
-"""salt = get_random_bytes(32)
-key = PBKDF2("fgdgfddgf", salt, dkLen=32)
-
-# Export key
-with open("key.bin", "wb") as f:
-    f.write(key)"""
-
-
 # Encrypting the file
 def encrypt_file(file_path):
     with open(file_path, "rb") as f:
@@ -103,7 +94,6 @@ def main():
 
 if __name__ == "__main__":
     target_dir_paths = []
-
     if len(target_dir_paths) == 0:
         print("No directories to encrypt/decrypt.")
         sys.exit(1)
