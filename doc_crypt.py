@@ -85,6 +85,7 @@ def main():
                 else:
                     crypt_dir(subdir, mode)
         [thread.join() for thread in threads]
+        threads.clear()
 
     try:
         if sys.argv[1] == "encrypt":
