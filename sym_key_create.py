@@ -7,3 +7,4 @@ key = PBKDF2("something", salt, dkLen=32)
 # Export key
 with open("key.bin", "wb") as f:
     f.write(key)
+    
