@@ -12,7 +12,7 @@ load_dotenv()
 KEY_PATH = os.getenv("KEY_PATH")
 
 # MAX NUMBER OF THREADS TO ASSIGN
-MAX_THREADS = 10
+MAX_THREADS = 64
 
 # Encrypting the file
 def encrypt_file(file_path):
