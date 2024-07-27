@@ -11,6 +11,9 @@ import threading
 load_dotenv()
 KEY_PATH = os.getenv("KEY_PATH")
 
+# MAX NUMBER OF THREADS TO ASSIGN
+MAX_THREADS = 10
+
 # Encrypting the file
 def encrypt_file(file_path):
     with open(file_path, "rb") as f:
@@ -68,7 +71,7 @@ def main():
                 continue
      
             for subdir in subdirs:
-                if len(threads) < 8:
+                if len(threads) < MAX_THREADS:
                     thread = threading.Thread(target=crypt_dir, args=(subdir, mode,))
                     threads.append(thread)
                     thread.start()
