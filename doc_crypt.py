@@ -62,7 +62,6 @@ def main():
         for directory in target_dir_paths:
             subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
             sub_dir_num = len(subdirs)
-            print(sub_dir_num)
 
             if sub_dir_num <= 1:
                 crypt_dir(directory, mode)
@@ -95,7 +94,7 @@ def main():
 if __name__ == "__main__":
     target_dir_paths = []
     if len(target_dir_paths) == 0:
-        print("No directories to encrypt/decrypt.")
+        print("No directories to encrypt or decrypt.")
         sys.exit(0)
     main()
     
