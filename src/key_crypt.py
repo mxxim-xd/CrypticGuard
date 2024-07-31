@@ -48,3 +48,7 @@ if __name__ == "__main__":
             f.write(private_key)
         with open(public_key_path, "wb") as f:
             f.write(public_key)
+
+        print("Generated new RSA key pair")
+        print(f"Private key: {private_key_path}")
+        print(f"Public key: {public_key_path}")

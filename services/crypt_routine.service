@@ -1,0 +1,12 @@
+[Unit]
+Description=Run encryption at shutdown
+DefaultDependencies=no
+Before=shutdown.target reboot.target halt.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/<user>/Encryption/doc_crypt.sh encrypt
+RemainAfterExit=true
+
+[Install]
+WantedBy=halt.target reboot.target shutdown.target
