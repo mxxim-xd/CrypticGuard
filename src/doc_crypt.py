@@ -95,7 +95,7 @@ def main():
         print("Files are encrypted or incorrect decryption.")
 
 if __name__ == "__main__":
-    target_dir_paths = ["/home/maxim/Documents/Wichtig", "/home/maxim/Documents/Schule"]
+    target_dir_paths = []
     if len(target_dir_paths) == 0:
         print("No directories to encrypt or decrypt.")
         sys.exit(0)
