@@ -3,7 +3,7 @@
 # Prompting user to ensure USB is plugged in
 echo "PLEASE MAKE SURE TO HAVE YOUR USB PLUGGED IN. YOU'LL NEED IT TO STORE THE PRIVATE KEY!"
 echo "AND REMEMBER: NO BACKUP = NO MERCY!"
-echo "Also make sure to change <user> to your username in the service files."
+echo "Ensure that the doc_crypt.sh file and all services only contain absolute paths to the doc_crypt.py file."
 read -p "Press enter to continue..."
 
 # Asking for the private key storage path
@@ -66,5 +66,4 @@ fi
 
 echo "RSA keys, symmetric key, env-file, and services installed successfully! Make sure to review them and check if everything is correct."
 echo "Don't forget to add the directories you want to encrypt to the target_dir_paths array in the doc_crypt.py file."
-echo "Ensure that the doc_crypt.sh file only contains absolute paths to the doc_crypt.py file."
 echo "Once you reboot your computer, the encryption routine will start running in the background."

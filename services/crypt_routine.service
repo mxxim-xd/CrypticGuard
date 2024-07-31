@@ -5,7 +5,7 @@ Before=shutdown.target reboot.target halt.target
 
 [Service]
 Type=oneshot
-ExecStart=/home/<user>/Encryption/doc_crypt.sh encrypt
+ExecStart=doc_crypt.sh encrypt
 RemainAfterExit=true
 
 [Install]

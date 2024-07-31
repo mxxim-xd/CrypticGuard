@@ -3,7 +3,7 @@ Description=Run decryption at login
 
 [Service]
 Type=oneshot
-ExecStart=/home/<user>/Encryption/doc_crypt.sh decrypt
+ExecStart=doc_crypt.sh decrypt
 Restart=no
 
 [Install]
