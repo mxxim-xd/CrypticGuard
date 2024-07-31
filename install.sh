@@ -25,7 +25,7 @@ fi
 
 # Installing Python dependencies
 echo "Installing dependencies..."
-pip3 install pycryptodome dotenv
+pip3 install pycryptodome python-dotenv
 if [[ $? -ne 0 ]]; then
     echo "Error: Failed to install Python dependencies."
     exit 1
