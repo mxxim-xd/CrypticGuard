@@ -8,12 +8,6 @@ read -p "Press enter to continue..."
 # Asking for the private key storage path
 read -p "Where should the private key be stored? (on your USB) " key_path
 
-# Verify that the provided path is valid and writable
-if [[ ! -d "$key_path" ]]; then
-    echo "Error: Directory $key_path does not exist. Please plug in your USB and try again."
-    exit 1
-fi
-
 # Creating env vars and storing them in .env file
 echo "Creating env vars..."
 env_file=".env"
