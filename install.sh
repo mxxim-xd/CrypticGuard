@@ -51,11 +51,11 @@ echo "Installing services..."
 services_dir="/etc/systemd/system"
 user_services_dir="/home/$USER/.config/systemd/user"
 
-sudo cp ./service/crypt_routine.service "$services_dir/crypt_routine.service"
+sudo cp ./services/crypt_routine.service "$services_dir/crypt_routine.service"
 sudo systemctl enable crypt_routine.service
 
 mkdir -p "$user_services_dir"
-cp ./service/crypt_boot_routine.service "$user_services_dir/crypt_boot_routine.service"
+cp ./services/crypt_boot_routine.service "$user_services_dir/crypt_boot_routine.service"
 systemctl --user enable crypt_boot_routine.service
 
 # Verifying successful service installation
