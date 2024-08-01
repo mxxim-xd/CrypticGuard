@@ -16,6 +16,10 @@ cat > "$env_file" <<EOL
 KEY_PATH="$(pwd)/key.bin"
 PUBLIC_KEY_PATH="$(pwd)/public_key.pem"
 PRIVATE_KEY_PATH="$key_path"
+MAX_THREADS="64"
+
+# Add the directories you want to encrypt to this array (seperate with comma)
+TARGET_DIR_PATHS=""
 EOL
 
 # Verifying successful creation of the .env file
@@ -65,5 +69,5 @@ if [[ $? -ne 0 ]]; then
 fi
 
 echo "RSA keys, symmetric key, env-file, and services installed successfully! Make sure to review them and check if everything is correct."
-echo "Don't forget to add the directories you want to encrypt to the target_dir_paths array in the doc_crypt.py file."
+echo "Don't forget to add the directories you want to encrypt to the .env file."
 echo "Once you reboot your computer, the encryption routine will start running in the background."
