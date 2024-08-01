@@ -12,7 +12,7 @@ load_dotenv()
 KEY_PATH = os.getenv("KEY_PATH")
 
 # MAX NUMBER OF THREADS TO ASSIGN
-MAX_THREADS = 64
+MAX_THREADS = int(os.getenv("MAX_THREADS"))
 
 # Encrypting the file
 def encrypt_file(file_path):
@@ -95,7 +95,7 @@ def main():
         print("Files are encrypted or incorrect decryption.")
 
 if __name__ == "__main__":
-    target_dir_paths = []
+    target_dir_paths = os.getenv("TARGET_DIR_PATHS").split(", ")
     if len(target_dir_paths) == 0:
         print("No directories to encrypt or decrypt.")
         sys.exit(0)
