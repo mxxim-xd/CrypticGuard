@@ -7,7 +7,7 @@ echo "Ensure that the doc_crypt.sh file and all services only contain absolute p
 read -p "Press enter to continue..."
 
 # Asking for the private key storage path
-read -p "Where should the private key be stored? (on your USB) " key_path
+read -p "Where should the private key be stored? (.pem file extension) " key_path
 
 # Creating env vars and storing them in .env file
 echo "Creating env vars..."
