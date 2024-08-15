@@ -1,16 +1,40 @@
-# File Encryption Service
+# CrypticGuard
 
-This is a file encryption service that encrypts files in directories through a combination of the AES and RSA encryption algorithms. It is meant to be used as a sort of BitLocker for Linux. You have a key on your USB-Drive which is used to decrypt your files.
+**CrypticGuard** is a powerful file encryption service designed to secure your files on Linux systems. Utilizing a hybrid encryption approach with RSA and AES algorithms, CrypticGuard ensures that your sensitive data remains protected. Think of it as the BitLocker equivalent for Linux. A decryption key is stored securely on your USB drive, making it easy and secure to encrypt and decrypt files.
+
+## Features
+
+- **Hybrid Encryption**: Combines the speed of AES encryption with the security of RSA.
+- **USB Key Support**: Use your USB drive as a secure key storage device.
+- **Directory Encryption**: Encrypts all files within specified directories.
+- **Linux Integration**: Designed specifically for **Linux environments** with **systemd**.
 
 ## Installation
 
-To install the file encryption service, you will need to have Python installed on your system. You can download Python from the official website: https://www.python.org/
+### Prerequisites
 
-Make sure to change the ExecStart property in the services files to the path of the doc_crypt.sh file on your system.
-Also use the absolute path of the doc_crypt.py file in the doc_crypt.sh file.
+- **Python 3.10 or newer**: Ensure Python is installed on your system. Download it from the [official Python website](https://www.python.org/).
 
-Then run the following script:
+### Steps to Install
 
-```bash
-./install.sh
-```
+1. **Clone the Repository**:
+
+   ```bash
+   git clone https://github.com/mxxim-xd/CrypticGuard.git
+   cd CrypticGuard
+   ```
+
+2. **Configure Service Files**:
+
+   - Modify the `ExecStart` property in the service files to point to the absolute path of the `doc_crypt.sh` script on your system.
+   - Ensure that the `doc_crypt.sh` script references the absolute path of the `doc_crypt.py` file.
+
+3. **Run the Installation Script**:
+   Execute the installation script to set up CrypticGuard:
+   ```bash
+   ./install.sh
+   ```
+
+### Post-Installation
+
+- After installation, your service will be set up to start automatically. Ensure your USB key is inserted whenever you need to decrypt files.
