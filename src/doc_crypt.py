@@ -24,9 +24,6 @@ class FileEncryptor:
         with open(file_path, "rb") as f:
             data = f.read() 
 
-        print(data)
-        print(self.key)
-
         cipher = AES.new(self.key, AES.MODE_CBC)
         ciphered_data = cipher.encrypt(pad(data, AES.block_size))
 
