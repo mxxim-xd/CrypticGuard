@@ -64,9 +64,8 @@ class DirectoryEncryptor(FileEncryptor):
             #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
             for directory in target_dir_paths:
                 subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
-                sub_dir_num = len(subdirs)
 
-                if sub_dir_num <= 1:
+                if len(subdirs) <= 1:
                     self.crypt_dir(directory, mode)
                     continue
         
