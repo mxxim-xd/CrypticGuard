@@ -49,7 +49,6 @@ class FileEncryptor:
 class DirectoryEncryptor(FileEncryptor):
     def __init__(self, key):
         super().__init__(key)
-        threads: list[threading.Thread] = []
 
     # Encrypting/Decrypting the directory
     def crypt_dir(self, directory, mode: str) -> None:
@@ -63,7 +62,7 @@ class DirectoryEncryptor(FileEncryptor):
                     self.crypt_dir(entry.path, mode)
 
     def crypt_all_dirs(self, mode: str) -> None:
-            threads = []
+            threads: list[threading.Thread] = []
             #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
             #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
             for directory in target_dir_paths:
