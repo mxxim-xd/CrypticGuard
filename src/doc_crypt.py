@@ -59,25 +59,25 @@ class DirectoryEncryptor(FileEncryptor):
                     self.crypt_dir(entry.path, mode)
 
     def crypt_all_dirs(self, mode: str) -> None:
-            threads: list[threading.Thread] = []
-            #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
-            #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
-            for directory in target_dir_paths:
-                subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
+        threads: list[threading.Thread] = []
+        #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
+        #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
+        for directory in target_dir_paths:
+            subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
 
-                if len(subdirs) <= 1:
-                    self.crypt_dir(directory, mode)
-                    continue
-        
-                for subdir in subdirs:
-                    if len(threads) < MAX_THREADS:
-                        thread = threading.Thread(target=self.crypt_dir, args=(subdir, mode,))
-                        threads.append(thread)
-                        thread.start()
-                    else:
-                        self.crypt_dir(subdir, mode)
-            [thread.join() for thread in threads]
-            threads.clear()
+            if len(subdirs) <= 1:
+                self.crypt_dir(directory, mode)
+                continue
+    
+            for subdir in subdirs:
+                if len(threads) < MAX_THREADS:
+                    thread = threading.Thread(target=self.crypt_dir, args=(subdir, mode,))
+                    threads.append(thread)
+                    thread.start()
+                else:
+                    self.crypt_dir(subdir, mode)
+        [thread.join() for thread in threads]
+        threads.clear()
 
 
 def main():
