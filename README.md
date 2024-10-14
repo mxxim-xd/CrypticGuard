@@ -2,6 +2,8 @@
 
 **CrypticGuard** is a powerful file encryption service designed to secure your files on Linux systems. Utilizing a hybrid encryption approach with RSA and AES algorithms, CrypticGuard ensures that your sensitive data remains protected. Think of it as the BitLocker equivalent for Linux. A decryption key is stored securely on your USB drive, making it easy and secure to encrypt and decrypt files.
 
+<span style="color:red">CAUTION: PLEASE BACK UP ALL YOUR DATA AND KEYS TO AVOID LOSS IN CASE OF AN ERROR!</span>
+
 ## Features
 
 - **Hybrid Encryption**: Combines the speed of AES encryption with the security of RSA.
