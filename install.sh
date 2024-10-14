@@ -28,14 +28,6 @@ if [[ ! -f "$env_file" ]]; then
     exit 1
 fi
 
-# Installing Python dependencies
-echo "Installing dependencies..."
-sudo pip3 install pycryptodome python-dotenv
-if [[ $? -ne 0 ]]; then
-    echo "Error: Failed to install Python dependencies."
-    exit 1
-fi
-
 # Generating symmetric key
 echo "Generating symmetric key..."
 if ! python3 ./src/sym_key_create.py; then
