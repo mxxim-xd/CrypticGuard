@@ -8,7 +8,7 @@ private_key_path = os.getenv("PRIVATE_KEY_PATH")
 public_key_path = os.getenv("PUBLIC_KEY_PATH")
 
 def generate_key_pair():
-    key = RSA.generate(2048)
+    key = RSA.generate(4096)
     private_key = key.export_key()
     public_key = key.publickey().export_key()
     return private_key, public_key
