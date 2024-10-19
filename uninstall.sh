@@ -2,7 +2,7 @@
 
 
 # TODO Warnings
-read -p "MAKE SURE TO DECRYPT EVERYTHING THAT WAS ENCRYPTED BEFORE RUNNING THIS SCRIPT!"
+read -p "MAKE SURE TO DECRYPT EVERYTHING THAT WAS ENCRYPTED BEFORE RUNNING THIS SCRIPT! "
 
 # Uninstalling services
 services_dir="/etc/systemd/system"
@@ -18,16 +18,34 @@ rm "$user_services_dir/crypt_boot_routine.service"
 # Verifying successful service removal
 if [[ $? -ne 0 ]]; then
     echo "Error: Failed to uninstall services."
-    exit 1
 fi
 
 # Removing keys from usb drive
 
-read -p "Do you wish to delete your key stored on your usb drive? (Y/N): " key_removal
+read -p "Do you wish to delete your keys stored on your usb drive? (Y/N) default[Y]: " answer
 
-echo "Make sure to plug in your usb drive!"
+if [[ $answer == "n" || $answer == "N" ]] then
+    echo "Successfully deleted services"
+    exit 1
+fi
+
+echo "Make sure to plug in your USB drive!"
 read -p "Press enter to continue..."
 
-# Reads out the .env file and stores the filtered content in a variable
-#PUBLIC_KEY_PATH=$(cat .env | grep "PUBLIC_KEY_PATH")
+ENV_FILE=".env"
 
+# Extract KEY_PATH
+KEY_PATH=$(grep "^KEY_PATH=" "$ENV_FILE" | cut -d'=' -f2 | tr -d '"')
+
+# Extract PUBLIC_KEY_PATH
+PUBLIC_KEY_PATH=$(grep "^PUBLIC_KEY_PATH=" "$ENV_FILE" | cut -d'=' -f2 | tr -d '"')
+
+# Extract PRIVATE_KEY_PATH
+PRIVATE_KEY_PATH=$(grep "^PRIVATE_KEY_PATH=" "$ENV_FILE" | cut -d'=' -f2 | tr -d '"')
+
+# Output the results
+rm $KEY_PATH || { echo "Error: Failed to remove $KEY_PATH"; }
+rm $PUBLIC_KEY_PATH || { echo "Error: Failed to remove $PUBLIC_KEY_PATH"; }
+rm $PRIVATE_KEY_PATH || { echo "Error: Failed to remove $PRIVATE_KEY_PATH"; }
+
+echo "Successfully deleted services and keys"
