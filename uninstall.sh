@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-# TODO Warnings
 read -p "MAKE SURE TO DECRYPT EVERYTHING THAT WAS ENCRYPTED BEFORE RUNNING THIS SCRIPT! "
 
 # Uninstalling services
