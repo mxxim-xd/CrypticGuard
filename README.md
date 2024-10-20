@@ -4,6 +4,10 @@
 
 <span style="color:red">CAUTION: PLEASE BACK UP ALL YOUR DATA AND KEYS TO AVOID LOSS IN CASE OF AN ERROR!</span>
 
+## CrypticGuard Logic
+
+<img src="CrypticGuard Logic Light.svg" alt="Description of the SVG"/>
+
 ## Features
 
 - **Hybrid Encryption**: Combines the speed of AES encryption with the security of RSA.
