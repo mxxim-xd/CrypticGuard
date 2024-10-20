@@ -1,6 +1,7 @@
 #!/bin/bash
 
-read -p "MAKE SURE TO DECRYPT EVERYTHING THAT WAS ENCRYPTED BEFORE RUNNING THIS SCRIPT! "
+echo "MAKE SURE TO DECRYPT EVERYTHING THAT WAS ENCRYPTED BEFORE RUNNING THIS SCRIPT!"
+read -p "Press enter to continue..."
 
 # Uninstalling services
 services_dir="/etc/systemd/system"
