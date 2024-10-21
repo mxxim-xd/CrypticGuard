@@ -23,7 +23,7 @@ fi
 
 read -p "Do you wish to delete your keys stored on your usb drive? (Y/N) default[Y]: " answer
 
-if [[ $answer == "n" || $answer == "N" ]] then
+if [[ $answer == "n" || $answer == "N" ]]; then
     echo "Successfully deleted services"
     exit 1
 fi

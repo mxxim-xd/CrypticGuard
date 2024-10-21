@@ -30,15 +30,10 @@
    cd CrypticGuard
    ```
 
-2. **Configure Service Files**:
-
-   - Modify the `ExecStart` property in the service files to point to the absolute path of the `doc_crypt.sh` script on your system.
-   - Ensure that the `doc_crypt.sh` script references the absolute path of the `doc_crypt.py` file.
-
-3. **Install the dependencies**:
+2. **Install the dependencies**:
    Install python-pycryptodome and python-dotenv with your package manager
 
-4. **Run the Installation Script**:
+3. **Run the Installation Script**:
    Execute the installation script to set up CrypticGuard:
    ```bash
    ./install.sh

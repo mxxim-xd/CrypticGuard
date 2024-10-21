@@ -3,8 +3,16 @@
 # Prompting user to ensure USB is plugged in
 echo "PLEASE MAKE SURE TO HAVE YOUR USB PLUGGED IN. YOU'LL NEED IT TO STORE THE PRIVATE KEY!"
 echo "AND REMEMBER: NO BACKUP = NO MERCY!"
-echo "Ensure that the doc_crypt.sh file and all services only contain absolute paths to the doc_crypt.py file."
 read -p "Press enter to continue..."
+
+# Changing paths in service files and doc_crypt.sh
+BOOT_SERVICE="./services/crypt_boot_routine.service"
+SHUTDOWN_SERVICE="./services/crypt_routine.service"
+SCRIPT_FILE="./doc_crypt.sh"
+
+sed -i "/^ExecStart=/c\ExecStart=$(pwd)/doc_crypt.sh decrypt" "$BOOT_SERVICE"
+sed -i "/^ExecStart=/c\ExecStart=$(pwd)/doc_crypt.sh encrypt" "$SHUTDOWN_SERVICE"
+sed -i "s|^\(python3 \).*|\1\"$(pwd)/src/doc_crypt.py\" \$1|" "$SCRIPT_FILE"
 
 # Asking for the private key storage path
 read -p "Where should the private key be stored? (.pem file extension) " key_path
