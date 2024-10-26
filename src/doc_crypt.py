@@ -61,7 +61,7 @@ class DirectoryEncryptor(FileEncryptor):
     def crypt_all_dirs(self, mode: str) -> None:
         threads: list[threading.Thread] = []
         
-        def add_thread(thread: threading.Thread): 
+        def add_thread(thread: threading.Thread) -> None: 
             threads.append(thread)
             thread.start()
 
@@ -85,7 +85,7 @@ class DirectoryEncryptor(FileEncryptor):
                 crypt_leftover = lambda: [self.encrypt_file(path) if mode == "encrypt" else self.decrypt_file(path) for path in leftover_files]
                 thread = threading.Thread(target=crypt_leftover)
                 add_thread(thread)
-
+                
         [thread.join() for thread in threads]
         threads.clear()
 
