@@ -60,13 +60,14 @@ class DirectoryEncryptor(FileEncryptor):
             for entry in entries:
                 if entry.is_file():
                     self.encrypt_file(entry.path) if self.mode == "encrypt" else self.decrypt_file(entry.path)
-                    print(f"{self.mode.capitalize()}ed {entry.path}")
+                    #print(f"{self.mode.capitalize()}ed {entry.path}")
 
                 elif entry.is_dir():
                     self.crypt_dir(entry.path)
 
     def crypt_all_dirs(self, dir_paths: list[str]) -> None:
         for directory in dir_paths:
+            print(f"Current dir: {directory} Value: {self.first_layer}")
             subdirs: list[str] = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
             leftover_files: list[str] = [os.path.join(directory, file) for file in os.listdir(directory) if os.path.isfile(os.path.join(directory, file))]
             
@@ -78,6 +79,7 @@ class DirectoryEncryptor(FileEncryptor):
             if self.first_layer:
                 self.first_layer = False
                 self.crypt_all_dirs(subdirs)
+                self.first_layer = True
                 continue
 
             for directory in subdirs:
@@ -87,6 +89,7 @@ class DirectoryEncryptor(FileEncryptor):
                 else:
                     self.crypt_dir(directory)
 
+        #print(len(self.threads))
         [thread.join() for thread in self.threads]
         self.threads.clear()
 
