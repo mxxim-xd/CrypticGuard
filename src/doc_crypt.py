@@ -48,7 +48,6 @@ class DirectoryEncryptor(FileEncryptor):
         super().__init__(key)
         self.mode: str = mode
         self.threads: list[threading.Thread] = []
-        self.first_layer: bool = True
 
     def add_thread(self, thread: threading.Thread) -> None: 
         self.threads.append(thread)
@@ -65,7 +64,15 @@ class DirectoryEncryptor(FileEncryptor):
                 elif entry.is_dir():
                     self.crypt_dir(entry.path)
 
-    def crypt_all_dirs(self, dir_paths: list[str]) -> None:
+    def initialize_crypt_process(self, dir_paths: list[str]) -> None:
+        for directory in dir_paths:
+            thread = threading.Thread(target=self.crypt_all_dirs, args=([directory], True,))
+            self.add_thread(thread)
+
+        [thread.join() for thread in self.threads]
+        self.threads.clear()
+
+    def crypt_all_dirs(self, dir_paths: list[str], get_layer: bool) -> None:
         for directory in dir_paths:
             subdirs: list[str] = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
             leftover_files: list[str] = [os.path.join(directory, file) for file in os.listdir(directory) if os.path.isfile(os.path.join(directory, file))]
@@ -75,9 +82,8 @@ class DirectoryEncryptor(FileEncryptor):
                 thread = threading.Thread(target=crypt_leftover)
                 self.add_thread(thread)
 
-            if self.first_layer:
-                self.first_layer = False
-                self.crypt_all_dirs(subdirs)
+            if get_layer:
+                self.crypt_all_dirs(subdirs, False)
                 continue
 
             for directory in subdirs:
@@ -86,9 +92,7 @@ class DirectoryEncryptor(FileEncryptor):
                     self.add_thread(thread)
                 else:
                     self.crypt_dir(directory)
-
-        [thread.join() for thread in self.threads]
-        self.threads.clear()
+        print("Process completed")
 
 def main():
     def load_key() -> str:
@@ -99,12 +103,12 @@ def main():
     try:
         if sys.argv[1] == "encrypt":
             key = load_key()
-            DirectoryEncryptor(key, "encrypt").crypt_all_dirs(target_dir_paths)
+            DirectoryEncryptor(key, "encrypt").initialize_crypt_process(target_dir_paths)
             encrypt_key(KEY_PATH)
         else:
             decrypt_key(KEY_PATH)
             key = load_key()
-            DirectoryEncryptor(key, "decrypt").crypt_all_dirs(target_dir_paths)
+            DirectoryEncryptor(key, "decrypt").initialize_crypt_process(target_dir_paths)
     except FileNotFoundError:
         print("Could not find a key.")
     except ValueError:
