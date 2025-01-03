@@ -72,6 +72,21 @@ class DirectoryEncryptor(FileEncryptor):
         [thread.join() for thread in self.threads]
         self.threads.clear()
 
+    """
+    The function crypt_all_dirs processes a list of directories for encryption or decryption, using multi-threading for efficiency.
+    It begins by iterating through each directory, separating its contents into subdirectories and files.
+    If there are files, a thread is created to encrypt or decrypt them based on the current mode (encrypt or decrypt),
+    and the thread is added to a thread management system. If the get_layer flag is set to True,
+    the function recursively processes all subdirectories at this level, then proceeds to handle subdirectories without further recursion.
+    For each subdirectory, a thread is created to process its contents if the number of active threads is below MAX_THREADS.
+    Otherwise, the subdirectory is processed synchronously.
+    This approach ensures efficient parallel processing while respecting the thread limit.
+
+    @param dir_paths: List[str] - A list of strings, each representing a directory path to be processed.
+    @param get_layer: bool - A boolean flag indicating whether to process subdirectories at the current level.
+    @return None
+    """
+
     def crypt_all_dirs(self, dir_paths: list[str], get_layer: bool) -> None:
         for directory in dir_paths:
             subdirs: list[str] = [os.path.join(directory, entry) for entry in os.listdir(directory) if os.path.isdir(os.path.join(directory, entry))]
